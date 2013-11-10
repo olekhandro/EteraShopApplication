@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="CSVWriter.cs" />
     <Compile Include="Domain\Good.cs" />
+    <Compile Include="Domain\GoodCart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebsiteManager.cs" />
   </ItemGroup>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace EteraShopCartApplication
+namespace EteraShopInterractingLibrary.Domain
 {
-    public class GoodAtCart
+    public class GoodCart
     {
         public string Title { get; set; }
         public string Option { get; set; }
