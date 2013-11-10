@@ -86,14 +86,13 @@ namespace EteraShopInterractingLibrary
         public static List<GoodCart> AddGoodsToCart(string login, string pass, List<GoodCart> goods)
         {
             List<GoodCart> result = new List<GoodCart>();
-            var IE = new IE();
-
-            LoginToWebPage(IE, login, pass);
 
             foreach (var goodCart in goods)
             {
                 try
                 {
+                    var IE = new IE();
+                    LoginToWebPage(IE, login, pass);
                     GetSearchList(goodCart.Title, IE);
                     AddGoodToCart(goodCart, IE);
                     goodCart.Status = "OK";
