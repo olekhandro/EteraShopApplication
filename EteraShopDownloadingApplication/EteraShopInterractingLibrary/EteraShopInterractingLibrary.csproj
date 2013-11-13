@@ -31,18 +31,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Selenium.WebDriverBackedSelenium">
+      <HintPath>..\Libs\selenium-dotnet-2.37.0\net35\Selenium.WebDriverBackedSelenium.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="ThoughtWorks.Selenium.Core">
+      <HintPath>..\Libs\selenium-dotnet-2.37.0\net35\ThoughtWorks.Selenium.Core.dll</HintPath>
+    </Reference>
     <Reference Include="WatiN.Core">
       <HintPath>..\Libs\WatiN.Core.dll</HintPath>
     </Reference>
+    <Reference Include="WebDriver">
+      <HintPath>..\Libs\selenium-dotnet-2.37.0\net35\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support">
+      <HintPath>..\Libs\selenium-dotnet-2.37.0\net35\WebDriver.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChromeWebsiteManager.cs" />
     <Compile Include="CSVWriter.cs" />
     <Compile Include="Domain\Good.cs" />
     <Compile Include="Domain\GoodCart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebsiteManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="chromedriver.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -51,7 +51,8 @@ namespace EterashopWinFormsDownloader
             {
                 categories.Add(category);
             }
-            var goods = WebsiteManager.GetGoodsFromWebsite(loginTBox.Text, passwordTBox.Text, categories);
+
+            var goods = ChromeWebsiteManager.GetGoodsFromWebsite(loginTBox.Text, passwordTBox.Text, categories);
             CSVWriter.MakeCSVFile(outputFilenameTBox.Text, goods);
         }
     }

@@ -53,40 +53,47 @@ namespace EteraShopInterractingLibrary
                         isVisitedDictionary.Remove(isVisitedDictionary.FirstOrDefault(x => x.Key == url).Key);
                         isVisitedDictionary.Add(url, true);
 
-                        IE.GoTo(url);
-                        Thread.Sleep(3000);
-
-                        var urls = IE.Links.Where(x => x.Url.Contains("serial_no") && !x.Url.Contains("Board"));
-                        foreach (var foundUrl in urls)
+                        try
                         {
-                            if (!goodLinks.Contains(foundUrl.Url))
+                            IE.GoTo(url);
+                            Thread.Sleep(3000);
+
+                            var urls = IE.Links.Where(x => x.Url.Contains("serial_no") && !x.Url.Contains("Board"));
+                            foreach (var foundUrl in urls)
                             {
-                                goodLinks.Add(foundUrl.Url);
+                                if (!goodLinks.Contains(foundUrl.Url))
+                                {
+                                    goodLinks.Add(foundUrl.Url);
+                                }
+                            }
+
+                            paginator = IE.TableCells.FirstOrDefault(x => x.Elements.Any(y => y.ClassName == "paginate"));
+                            if (paginator != null)
+                                links = paginator.Links.Where(x => x.Url.Contains("reqPage")).ToList();
+                            foreach (var link in links)
+                            {
+                                if (
+                                    !isVisitedDictionary.Keys.Any(
+                                        x => x.Contains(link.Url.Substring(0, link.Url.IndexOf("&")))))
+                                {
+                                    isVisitedDictionary.Add(link.Url, false);
+                                }
                             }
                         }
-
-                        paginator = IE.TableCells.FirstOrDefault(x => x.Elements.Any(y => y.ClassName == "paginate"));
-                        if (paginator != null)
-                            links = paginator.Links.Where(x => x.Url.Contains("reqPage")).ToList();
-                        foreach (var link in links)
+                        catch (Exception)
                         {
-                            if (
-                                !isVisitedDictionary.Keys.Any(
-                                    x => x.Contains(link.Url.Substring(0, link.Url.IndexOf("&")))))
-                            {
-                                isVisitedDictionary.Add(link.Url, false);
-                            }
+                            
                         }
+                       
                     }
                     foreach (string goodLink in goodLinks)
                     {
                         try
                         {
-
+                            result.Add(GetGoodFromWebPage(goodLink, IE));
                         }
                         catch (Exception)
                         {
-                            result.Add(GetGoodFromWebPage(goodLink, IE));
                         }
                     }
                 }
@@ -172,7 +179,7 @@ namespace EteraShopInterractingLibrary
         private static void LoginToWebPage(IE IE, string login , string pass)
         {
             IE.GoTo(ETERASHOPLOGINADDRESS);
-            Thread.Sleep(5000);
+            Thread.Sleep(3000);
             var loginTextField = IE.TextFields.FirstOrDefault(x => x.Name == "id");
             if (loginTextField != null) loginTextField.TypeText(login);
             var passwordTextField = IE.TextFields.FirstOrDefault(x => x.Name == "password");
