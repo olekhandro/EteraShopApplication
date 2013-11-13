@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using EteraShopInterractingLibrary;
 
@@ -13,6 +15,7 @@ namespace EterashopWinFormsDownloader
         public MainForm()
         {
             InitializeComponent();
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("ko-KR");
             saveFileDialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using EteraShopInterractingLibrary.Domain;
 
 namespace EteraShopInterractingLibrary
@@ -23,11 +24,11 @@ namespace EteraShopInterractingLibrary
                     }
                     else
                     {
-                        colorsString = colorsString + " " + color;
+                        colorsString = colorsString + " , " + color;
                     }
                     isFirst = false;
                 }
-                writer.WriteLine(",{0},{1},{2},{3}", good.Title, good.Price, colorsString, good.Description);
+                writer.WriteLine(";{0};{1};{2};{3}", good.Title, good.Price, colorsString, good.Description);
             }
             writer.Close();
         }

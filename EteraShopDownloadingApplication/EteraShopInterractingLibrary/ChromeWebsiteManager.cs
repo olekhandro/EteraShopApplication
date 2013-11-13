@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using EteraShopInterractingLibrary.Domain;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Remote;
 using WatiN.Core;
 
 namespace EteraShopInterractingLibrary
@@ -23,13 +25,22 @@ namespace EteraShopInterractingLibrary
         {
             var result = new List<Good>();
 
+            //var options = new ChromeOptionsWithPrefs();
+            //options.prefs = new Dictionary<string, object>();
+            //var imagesDictionary = new Dictionary<string, object>();
+            //imagesDictionary.Add("images", 2);
+            //options.prefs.Add("profile.default_content_settings", imagesDictionary);
+
             var webDriver = new ChromeDriver();
+
 
             LoginToWebPage(webDriver,login,pass);
 
             Thread.Sleep(15000);
 
             
+
+
 
             foreach (var category in searchWords)
             {
@@ -99,7 +110,7 @@ namespace EteraShopInterractingLibrary
                  result.Add(GetGoodFromWebPage(webDriver, goodLink));   
                 }
             }
-
+            webDriver.Close();
             return result;
         }
 
@@ -122,7 +133,29 @@ namespace EteraShopInterractingLibrary
         private static void SearchCategory(ChromeDriver chromeDriver, string searchCategory)
         {
             var categoryTBox = chromeDriver.FindElementByName("search");
-            categoryTBox.SendKeys(searchCategory);
+
+            string strOut = "";
+
+            int euckrCodepage = 949;//949;//51949;
+
+            System.Text.Encoding originalEncoding = System.Text.Encoding.GetEncoding(1252);
+
+
+            System.Text.Encoding euckr = System.Text.Encoding.GetEncoding(euckrCodepage);
+            StringBuilder sbEncoding = new StringBuilder();
+
+
+            sbEncoding.Append(searchCategory);
+
+
+            byte[] rawbytes = originalEncoding.GetBytes(searchCategory);
+
+
+            string s = euckr.GetString(rawbytes);
+
+            strOut = sbEncoding.ToString();
+
+            categoryTBox.SendKeys(strOut);
             var searchBtn =
                 chromeDriver.FindElementByXPath("/html/body/table[1]/tbody/tr/td/table/tbody/tr/td/div/div[5]/a");
             searchBtn.Click();
@@ -161,5 +194,9 @@ namespace EteraShopInterractingLibrary
 
             return result;
         }
+    }
+    public class ChromeOptionsWithPrefs : ChromeOptions
+    {
+        public Dictionary<string, object> prefs { get; set; }
     }
 }
