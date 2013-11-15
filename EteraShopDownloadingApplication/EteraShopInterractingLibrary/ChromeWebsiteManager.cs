@@ -7,12 +7,13 @@ using System.Threading;
 using EteraShopInterractingLibrary.Domain;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using WatiN.Core;
 
 namespace EteraShopInterractingLibrary
 {
-    public class ChromeWebsiteManager
+    public class FirefoxWebsiteManager
     {
         private const string ETERASHOPADDRESS = "http://www.eterashop.com/main/index.php";
 
@@ -31,108 +32,118 @@ namespace EteraShopInterractingLibrary
             //imagesDictionary.Add("images", 2);
             //options.prefs.Add("profile.default_content_settings", imagesDictionary);
 
-            var webDriver = new ChromeDriver();
+            var webDriver = new FirefoxDriver();
 
 
             LoginToWebPage(webDriver,login,pass);
 
-            Thread.Sleep(15000);
-
-            
-
-
+            Thread.Sleep(3000);
 
             foreach (var category in searchWords)
             {
-                List<string>goodLinks = new List<string>();
+                List<string> goodLinks = new List<string>();
                 SearchCategory(webDriver, category);
-
+                Thread.Sleep(3000);
                 var isVisitedDictionary = new Dictionary<string, bool>();
-
-                var paginator =
-                    webDriver.FindElementByXPath(
-                        "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[5]/td[3]/table/tbody/tr[9]/td");
-
-                var linksElements = paginator.FindElements(By.TagName("a")).ToList();
-                List<string> links = linksElements.Select(link => link.GetAttribute("href")).ToList();
-                foreach (var link in links)
+                IWebElement paginator = null;
+                try
                 {
-                    if (!isVisitedDictionary.Keys.Any(x => x.Contains(link)))
-                    {
-                        isVisitedDictionary.Add(link, false);
-                    }
-                }
-                while (isVisitedDictionary.Values.Any(x => x == false))
-                {
-                    string url = isVisitedDictionary.FirstOrDefault(x => x.Value == false).Key;
-                    isVisitedDictionary.Remove(isVisitedDictionary.FirstOrDefault(x => x.Key == url).Key);
-                    isVisitedDictionary.Add(url, true);
-                    webDriver.Url = url;
-                    Thread.Sleep(5000);
-
-
-
                     paginator =
                         webDriver.FindElementByXPath(
                             "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[5]/td[3]/table/tbody/tr[9]/td");
+                }
+                catch (Exception)
+                {
 
-                    linksElements = paginator.FindElements(By.TagName("a")).ToList();
-                    links = new List<string>();
-                    foreach (var linkElement in linksElements)
-                    {
-                        links.Add(linkElement.GetAttribute("href"));
-                    }
+                }
+                if (paginator != null)
+                {
+                    var linksElements = paginator.FindElements(By.TagName("a")).ToList();
+                    List<string> links = linksElements.Select(link => link.GetAttribute("href")).ToList();
                     foreach (var link in links)
                     {
-                        if (
-                            !isVisitedDictionary.Keys.Any(
-                                x => x.Contains(link)))
+                        if (!isVisitedDictionary.Keys.Any(x => x.Contains(link)))
                         {
                             isVisitedDictionary.Add(link, false);
                         }
                     }
-
-                    var goodsTable =
-                        webDriver.FindElementByXPath(
-                            "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[5]/td[3]/table/tbody/tr[8]/td/table");
-                    var tags = goodsTable.FindElements(By.TagName("a")).ToList();
-                    foreach (var tag in tags)
+                    while (isVisitedDictionary.Values.Any(x => x == false))
                     {
-                        var href = tag.GetAttribute("href");
-                        if (href.Contains("serial_no"))
-                            if (!goodLinks.Contains(href))
-                                goodLinks.Add(tag.GetAttribute("href"));
-                    }
-                }
+                        string url = isVisitedDictionary.FirstOrDefault(x => x.Value == false).Key;
+                        isVisitedDictionary.Remove(isVisitedDictionary.FirstOrDefault(x => x.Key == url).Key);
+                        isVisitedDictionary.Add(url, true);
+                        webDriver.Url = url;
+                        Thread.Sleep(5000);
 
-                foreach (var goodLink in goodLinks)
-                {
-                 result.Add(GetGoodFromWebPage(webDriver, goodLink));   
+
+
+                        paginator =
+                            webDriver.FindElementByXPath(
+                                "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[5]/td[3]/table/tbody/tr[9]/td");
+
+                        linksElements = paginator.FindElements(By.TagName("a")).ToList();
+                        links = new List<string>();
+                        foreach (var linkElement in linksElements)
+                        {
+                            links.Add(linkElement.GetAttribute("href"));
+                        }
+                        foreach (var link in links)
+                        {
+                            if (
+                                !isVisitedDictionary.Keys.Any(
+                                    x => x.Contains(link)))
+                            {
+                                isVisitedDictionary.Add(link, false);
+                            }
+                        }
+
+                        var goodsTable =
+                            webDriver.FindElementByXPath(
+                                "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[5]/td[3]/table/tbody/tr[8]/td/table");
+                        var tags = goodsTable.FindElements(By.TagName("a")).ToList();
+                        foreach (var tag in tags)
+                        {
+                            var href = tag.GetAttribute("href");
+                            if (href.Contains("serial_no"))
+                                if (!goodLinks.Contains(href))
+                                    goodLinks.Add(tag.GetAttribute("href"));
+                        }
+                    }
+
+                    foreach (var goodLink in goodLinks)
+                    {
+                        result.Add(GetGoodFromWebPage(webDriver, goodLink));
+                    }
                 }
             }
             webDriver.Close();
             return result;
         }
 
-        private static void LoginToWebPage(ChromeDriver chromeDriver, string login, string pass)
+        public static void AddGoodsToCart(string login, string pass, List<GoodCart> goodCarts)
         {
-            chromeDriver.Url = ETERASHOPLOGINADDRESS;
+            
+        }
 
-            var loginTBox = chromeDriver.FindElementByName("id");
+        private static void LoginToWebPage(FirefoxDriver firefoxDriver, string login, string pass)
+        {
+            firefoxDriver.Url = ETERASHOPLOGINADDRESS;
+
+            var loginTBox = firefoxDriver.FindElementByName("id");
             loginTBox.SendKeys(login);
-            var passwordTBox= chromeDriver.FindElementByName("password");
+            var passwordTBox= firefoxDriver.FindElementByName("password");
             passwordTBox.SendKeys(pass);
 
             var loginBtn =
-                chromeDriver.FindElementByXPath(
+                firefoxDriver.FindElementByXPath(
                     "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[4]/td[3]/table/tbody/tr[3]/td/table/tbody/tr/td[2]/table/tbody/tr[1]/td/form/table/tbody/tr[2]/td/table/tbody/tr/td[3]/img");
 
             loginBtn.Click();
         }
 
-        private static void SearchCategory(ChromeDriver chromeDriver, string searchCategory)
+        private static void SearchCategory(FirefoxDriver firefoxDriver, string searchCategory)
         {
-            var categoryTBox = chromeDriver.FindElementByName("search");
+            var categoryTBox = firefoxDriver.FindElementByName("search");
 
             string strOut = "";
 
@@ -157,27 +168,28 @@ namespace EteraShopInterractingLibrary
 
             categoryTBox.SendKeys(strOut);
             var searchBtn =
-                chromeDriver.FindElementByXPath("/html/body/table[1]/tbody/tr/td/table/tbody/tr/td/div/div[5]/a");
+                firefoxDriver.FindElementByXPath("/html/body/table[1]/tbody/tr/td/table/tbody/tr/td/div/div[5]/a");
             searchBtn.Click();
         }
 
-        private static Good GetGoodFromWebPage(ChromeDriver chromeDriver, string url)
+        private static Good GetGoodFromWebPage(FirefoxDriver firefoxDriver, string url)
         {
             var result = new Good();
-            chromeDriver.Url = url;
+            firefoxDriver.Url = url;
+            Thread.Sleep(3000);
 
             result.Title =
-                chromeDriver.FindElementByXPath(
+                firefoxDriver.FindElementByXPath(
                     "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[4]/td[3]/table/tbody/tr[2]/td/table/tbody/tr/td[3]/table/tbody/tr/td/table/tbody/tr[1]/td")
                     .Text;
 
             result.Price =
-                chromeDriver.FindElementByXPath(
+                firefoxDriver.FindElementByXPath(
                     "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[4]/td[3]/table/tbody/tr[2]/td/table/tbody/tr/td[3]/table/tbody/tr/td/table/tbody/tr[2]/td[3]/table/tbody/tr[4]/td[2]")
                     .Text;
 
             var colorsSelect =
-                chromeDriver.FindElementByXPath(
+                firefoxDriver.FindElementByXPath(
                     "/html/body/table[2]/tbody/tr[1]/td/table/tbody/tr[4]/td[3]/table/tbody/tr[2]/td/table/tbody/tr/td[3]/table/tbody/tr/td/table/tbody/tr[2]/td[3]/table/tbody/tr[6]/td[2]/select");
             var options = colorsSelect.FindElements(By.TagName("option")).ToList();
             foreach (var option in options.Skip(1))
@@ -186,7 +198,7 @@ namespace EteraShopInterractingLibrary
             }
 
             var src =
-                chromeDriver.FindElementByXPath("//*[@id=\"detail_content1\"]/table/tbody/tr[4]/td/img")
+                firefoxDriver.FindElementByXPath("//*[@id=\"detail_content1\"]/table/tbody/tr[4]/td/img")
                     .GetAttribute("src");
             result.Description = src.Substring(src.LastIndexOf(@"/") + 1,
                 (src.LastIndexOf(@".") - src.LastIndexOf(@"/")));
@@ -194,6 +206,7 @@ namespace EteraShopInterractingLibrary
 
             return result;
         }
+    
     }
     public class ChromeOptionsWithPrefs : ChromeOptions
     {
