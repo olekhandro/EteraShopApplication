@@ -55,7 +55,7 @@ namespace EterashopWinFormsDownloader
                 categories.Add(category);
             }
 
-            var goods = FirefoxWebsiteManager.GetGoodsFromWebsite(loginTBox.Text, passwordTBox.Text, categories);
+            var goods = FirefoxWebsiteManager.GetGoodsFromWebsite(loginTBox.Text, passwordTBox.Text, categories, Application.StartupPath);
             CSVWriter.MakeCSVFile(outputFilenameTBox.Text, goods);
         }
     }

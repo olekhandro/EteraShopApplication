@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
@@ -22,7 +24,7 @@ namespace EteraShopInterractingLibrary
         private const string ETERASHOPLOGINADDRESS =
             "https://www.eterashop.com/login/login_page.php?preurl=http%3A%2F%2Fwww.eterashop.com%2Fmain%2Findex.php%3F";
 
-        public static List<Good> GetGoodsFromWebsite(string login, string pass, List<string> searchWords)
+        public static List<Good> GetGoodsFromWebsite(string login, string pass, List<string> searchWords, string startupFolder)
         {
             var result = new List<Good>();
 
@@ -112,7 +114,7 @@ namespace EteraShopInterractingLibrary
 
                     foreach (var goodLink in goodLinks)
                     {
-                        result.Add(GetGoodFromWebPage(webDriver, goodLink));
+                        result.Add(GetGoodFromWebPage(webDriver, goodLink, startupFolder));
                     }
                 }
             }
@@ -172,7 +174,7 @@ namespace EteraShopInterractingLibrary
             searchBtn.Click();
         }
 
-        private static Good GetGoodFromWebPage(FirefoxDriver firefoxDriver, string url)
+        private static Good GetGoodFromWebPage(FirefoxDriver firefoxDriver, string url, string startupFolder)
         {
             var result = new Good();
             firefoxDriver.Url = url;
@@ -203,7 +205,11 @@ namespace EteraShopInterractingLibrary
             result.Description = src.Substring(src.LastIndexOf(@"/") + 1,
                 (src.LastIndexOf(@".") - src.LastIndexOf(@"/")));
 
-
+            WebRequest req = WebRequest.Create(src);
+            WebResponse response = req.GetResponse();
+            Stream stream = response.GetResponseStream();
+            System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
+            image.Save(startupFolder+@"\Images\"+ result.Description+".jpg");
             return result;
         }
     

@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="ThoughtWorks.Selenium.Core">
       <HintPath>..\Libs\selenium-dotnet-2.37.0\net35\ThoughtWorks.Selenium.Core.dll</HintPath>
     </Reference>
