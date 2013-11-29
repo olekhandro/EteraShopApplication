@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -36,6 +37,7 @@ namespace EteraShopInterractingLibrary
 
             var webDriver = new FirefoxDriver();
 
+            webDriver.Manage().Window.Maximize();
 
             LoginToWebPage(webDriver,login,pass);
 
@@ -204,15 +206,16 @@ namespace EteraShopInterractingLibrary
                     .GetAttribute("src");
             result.Description = src.Substring(src.LastIndexOf(@"/") + 1,
                 (src.LastIndexOf(@".") - src.LastIndexOf(@"/")));
+            firefoxDriver.Url = src;
+            
+            firefoxDriver.Mouse.Click(Display);
 
-            WebRequest req = WebRequest.Create(src);
-            WebResponse response = req.GetResponse();
-            Stream stream = response.GetResponseStream();
-            System.Drawing.Image image = System.Drawing.Image.FromStream(stream);
-            image.Save(startupFolder+@"\Images\"+ result.Description+".jpg");
+            var screenshot = firefoxDriver.GetScreenshot();
+            screenshot.SaveAsFile(startupFolder + @"\Images\" + result.Description + ".jpg", ImageFormat.Jpeg);
+            
             return result;
         }
-    
+
     }
     public class ChromeOptionsWithPrefs : ChromeOptions
     {
